@@ -15,23 +15,25 @@ interface FamilyNode {
 
 const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const gRef = useRef<SVGGElement | null>(null);
 
   useEffect(() => {
-    if (!svgRef.current) return;
+    if (!svgRef.current || !gRef.current) return;
 
     const svg = d3.select(svgRef.current)
       .attr('width', window.innerWidth)
       .attr('height', window.innerHeight)
       .call(d3.zoom<SVGSVGElement, unknown>().on('zoom', (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
-        svg.select('g').attr('transform', event.transform.toString());
-      }))
-      .append('g');
+        d3.select(gRef.current).attr('transform', event.transform.toString());
+      }));
+
+    const g = d3.select(gRef.current);
 
     const root = d3.hierarchy<FamilyNode>(data);
     const treeLayout = d3.tree<FamilyNode>().size([window.innerWidth, window.innerHeight]);
     treeLayout(root);
 
-    svg.selectAll('.link')
+    g.selectAll('.link')
       .data(root.links() as Array<HierarchyPointLink<FamilyNode>>)
       .enter()
       .append('line')
@@ -43,7 +45,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .attr('stroke', '#ccc')
       .attr('stroke-width', 2);
 
-    const node = svg.selectAll('.node')
+    const node = g.selectAll('.node')
       .data(root.descendants() as Array<HierarchyPointNode<FamilyNode>>)
       .enter()
       .append('g')
@@ -67,12 +69,12 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       svg.attr('width', window.innerWidth)
          .attr('height', window.innerHeight);
       treeLayout.size([window.innerWidth, window.innerHeight])(root);
-      svg.selectAll('.link')
+      g.selectAll('.link')
          .attr('x1', (d: any) => (d.source as HierarchyPointNode<FamilyNode>).x || 0)
          .attr('y1', (d: any) => (d.source as HierarchyPointNode<FamilyNode>).y || 0)
          .attr('x2', (d: any) => (d.target as HierarchyPointNode<FamilyNode>).x || 0)
          .attr('y2', (d: any) => (d.target as HierarchyPointNode<FamilyNode>).y || 0);
-      svg.selectAll('.node')
+      g.selectAll('.node')
          .attr('transform', (d: any) => `translate(${(d as HierarchyPointNode<FamilyNode>).x || 0},${(d as HierarchyPointNode<FamilyNode>).y || 0})`);
     };
 
@@ -82,7 +84,9 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
   }, [data]);
 
   return (
-    <svg ref={svgRef} className="w-full h-full"></svg>
+    <svg ref={svgRef} className="w-full h-full">
+      <g ref={gRef}></g>
+    </svg>
   );
 };
 
