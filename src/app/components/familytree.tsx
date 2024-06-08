@@ -29,6 +29,8 @@ const assignImages = (node: FamilyNode) => {
 const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const gRef = useRef<SVGGElement | null>(null);
+  const nodeR = 30; // Radius of each node
+  const sOffset = 80; // Spouse node offset from 
 
   // Assign images before rendering
   useEffect(() => {
@@ -57,7 +59,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .append('clipPath')
       .attr('id', 'circle-clip')
       .append('circle')
-      .attr('r', 20)
+      .attr('r', nodeR)
       .attr('cx', 0)
       .attr('cy', 0);
 
@@ -85,14 +87,14 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
     // Append images
     node.append('image')
       .attr('xlink:href', d => d.data.image || '')
-      .attr('width', 40)
-      .attr('height', 40)
-      .attr('x', -20)
-      .attr('y', -20)
+      .attr('width', 2*nodeR)
+      .attr('height', 2*nodeR)
+      .attr('x', -nodeR)
+      .attr('y', -nodeR)
       .attr('clip-path', 'url(#circle-clip)');
 
     node.append('circle')
-      .attr('r', 20)
+      .attr('r', nodeR)
       .attr('fill', 'none')
       .attr('stroke', '#000')
       .attr('stroke-width', 3);
@@ -107,7 +109,8 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .enter()
       .append('tspan')
       .attr('x', 0)
-      .attr('dy', (d, i) => i === 0 ? '-3em' : '-1.5em') // Adjust vertical spacing
+      // .attr('dy', (d, i) => i === 0 ? '-3em' : '-1.5em') // Adjust vertical spacing
+      .attr('dy', (d, i) => i === 0 ? -.15*nodeR+'em' : -3/40*nodeR+'em') // Adjust vertical spacing
       .text(d => d);
 
     // Add spouse nodes
@@ -116,19 +119,19 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .enter()
       .append('g')
       .attr('class', 'spouse-node')
-      .attr('transform', (d: HierarchyPointNode<FamilyNode>) => `translate(${(d.x || 0) + 80},${d.y || 0})`);
+      .attr('transform', (d: HierarchyPointNode<FamilyNode>) => `translate(${(d.x || 0) + sOffset},${d.y || 0})`);
 
     // Append images for spouse nodes
     spouseNode.append('image')
       .attr('xlink:href', d => d.data.image || '')
-      .attr('width', 40)
-      .attr('height', 40)
-      .attr('x', -20)
-      .attr('y', -20)
+      .attr('width', 2*nodeR)
+      .attr('height', 2*nodeR)
+      .attr('x', -nodeR)
+      .attr('y', -nodeR)
       .attr('clip-path', 'url(#circle-clip)');
 
     spouseNode.append('circle')
-      .attr('r', 20)
+      .attr('r', nodeR)
       .attr('fill', 'none')
       .attr('stroke', '#000')
       .attr('stroke-width', 3);
@@ -143,7 +146,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .enter()
       .append('tspan')
       .attr('x', 0)
-      .attr('dy', (d, i) => i === 0 ? '-3em' : '-1.5em') // Adjust vertical spacing
+      .attr('dy', (d, i) => i === 0 ? -.15*nodeR+'em' : -3/40*nodeR+'em') // Adjust vertical spacing
       .text(d => d);
 
     // Add spouse links
@@ -152,9 +155,9 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .enter()
       .append('line')
       .attr('class', 'spouse-link')
-      .attr('x1', (d: HierarchyPointNode<FamilyNode>) => (d.x || 0) + 20) // Adjust for circle radius
+      .attr('x1', (d: HierarchyPointNode<FamilyNode>) => (d.x || 0) + nodeR) // Adjust for circle radius
       .attr('y1', (d: HierarchyPointNode<FamilyNode>) => d.y || 0)
-      .attr('x2', (d: HierarchyPointNode<FamilyNode>) => (d.x || 0) + 60) // Adjust for circle radius (80 - 20)
+      .attr('x2', (d: HierarchyPointNode<FamilyNode>) => (d.x || 0) + sOffset - nodeR) // Adjust for circle radius
       .attr('y2', (d: HierarchyPointNode<FamilyNode>) => d.y || 0)
       .attr('stroke', '#000')
       .attr('stroke-width', 2);
@@ -171,11 +174,11 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       g.selectAll('.node')
          .attr('transform', (d: any) => `translate(${(d as HierarchyPointNode<FamilyNode>).x || 0},${(d as HierarchyPointNode<FamilyNode>).y || 0})`);
       g.selectAll('.spouse-node')
-         .attr('transform', (d: any) => `translate(${(d as HierarchyPointNode<FamilyNode>).x + 80 || 0},${(d as HierarchyPointNode<FamilyNode>).y || 0})`);
+         .attr('transform', (d: any) => `translate(${(d as HierarchyPointNode<FamilyNode>).x + sOffset || 0},${(d as HierarchyPointNode<FamilyNode>).y || 0})`);
       g.selectAll('.spouse-link')
-         .attr('x1', (d: any) => (d.x || 0) + 20)
+         .attr('x1', (d: any) => (d.x || 0) + nodeR)
          .attr('y1', (d: any) => d.y || 0)
-         .attr('x2', (d: any) => (d.x || 0) + 80)
+         .attr('x2', (d: any) => (d.x || 0) + sOffset)
          .attr('y2', (d: any) => d.y || 0);
     };
 
