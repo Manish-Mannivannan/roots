@@ -30,7 +30,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const gRef = useRef<SVGGElement | null>(null);
   const nodeR = 30; // Radius of each node
-  const sOffset = 80; // Spouse node offset from 
+  const sOffset = 100; // Spouse node offset from 
 
   // Assign images before rendering
   useEffect(() => {
@@ -110,7 +110,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .append('tspan')
       .attr('x', 0)
       // .attr('dy', (d, i) => i === 0 ? '-3em' : '-1.5em') // Adjust vertical spacing
-      .attr('dy', (d, i) => i === 0 ? -.15*nodeR+'em' : -3/40*nodeR+'em') // Adjust vertical spacing
+      .attr('dy', (d, i) => i === 0 ? -1.6*nodeR+'px' : -.7*nodeR+'px') // Adjust vertical spacing
       .text(d => d);
 
     // Add spouse nodes
@@ -146,7 +146,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .enter()
       .append('tspan')
       .attr('x', 0)
-      .attr('dy', (d, i) => i === 0 ? -.15*nodeR+'em' : -3/40*nodeR+'em') // Adjust vertical spacing
+      .attr('dy', (d, i) => i === 0 ? -1.6*nodeR+'px' : -.7*nodeR+'px') // Adjust vertical spacing
       .text(d => d);
 
     // Add spouse links
