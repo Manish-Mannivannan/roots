@@ -29,10 +29,12 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Run Next.js
-        run: npm run start -- -p 3000
+      - name: Start Next.js
+        run: npm run start -- -p 3000 &
         env:
           NEXT_PUBLIC_TEST_ENV: true
 
       - name: Check if site is running
-        run: curl -f http://localhost:3000 || exit 1
+        run: |
+          sleep 5 # Give the server a few seconds to start
+          curl -f http://localhost:3000 || exit 1
