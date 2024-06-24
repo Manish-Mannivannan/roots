@@ -40,19 +40,32 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
   useEffect(() => {
     if (!svgRef.current || !gRef.current) return;
 
+    const parentElement = svgRef.current.parentElement;
+    if (!parentElement) return;
+  
+    const svgWidth = parentElement.clientWidth;
+    const svgHeight = parentElement.clientHeight;
+  
     const svg = d3.select(svgRef.current)
-      .attr('width', window.innerWidth)
-      .attr('height', window.innerHeight)
+      .attr('width', svgWidth)
+      .attr('height', svgHeight)
       .call(d3.zoom<SVGSVGElement, unknown>().on('zoom', (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
         d3.select(gRef.current).attr('transform', event.transform.toString());
       }));
-
+  
     const g = d3.select(gRef.current);
-
+  
     const root = d3.hierarchy<FamilyNode>(data);
     const treeLayout = d3.tree<FamilyNode>()
       .nodeSize([100, 200]); // Increase node size for better spacing
     treeLayout(root);
+  
+    // Calculate the center offset based on the parent element's width
+    const xOffset = svgWidth / 2 - (root.x || 0);
+    const yOffset = svgHeight / 8 - (root.y || 0); // Adjust the yOffset as needed
+  
+    // Apply the initial transform to center the tree
+    g.attr('transform', `translate(${xOffset},${yOffset})`);
 
     // Define clipPath for circles
     svg.append('defs')
