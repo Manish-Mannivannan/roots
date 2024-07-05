@@ -30,7 +30,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const gRef = useRef<SVGGElement | null>(null);
   const nodeR = 30; // Radius of each node
-  const sOffset = 100; // Spouse node offset from 
+  const sOffset = 100; // Spouse node offset from main node
 
   // Assign images before rendering
   useEffect(() => {
@@ -42,30 +42,36 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
 
     const parentElement = svgRef.current.parentElement;
     if (!parentElement) return;
-  
+
     const svgWidth = parentElement.clientWidth;
     const svgHeight = parentElement.clientHeight;
-  
+
     const svg = d3.select(svgRef.current)
       .attr('width', svgWidth)
-      .attr('height', svgHeight)
-      .call(d3.zoom<SVGSVGElement, unknown>().on('zoom', (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
-        d3.select(gRef.current).attr('transform', event.transform.toString());
-      }));
-  
+      .attr('height', svgHeight);
+
     const g = d3.select(gRef.current);
-  
+
     const root = d3.hierarchy<FamilyNode>(data);
-    const treeLayout = d3.tree<FamilyNode>()
-      .nodeSize([100, 200]); // Increase node size for better spacing
+    const treeLayout = d3.tree<FamilyNode>().nodeSize([100, 200]);
     treeLayout(root);
-  
+
     // Calculate the center offset based on the parent element's width
     const xOffset = svgWidth / 2 - (root.x || 0);
-    const yOffset = svgHeight / 8 - (root.y || 0); // Adjust the yOffset as needed
-  
+    const yOffset = svgHeight / 6 - (root.y || 0); // Adjust the yOffset as needed
+
     // Apply the initial transform to center the tree
-    g.attr('transform', `translate(${xOffset},${yOffset})`);
+    const initialTransform = d3.zoomIdentity.translate(xOffset, yOffset);
+    svg.call(d3.zoom<SVGSVGElement, unknown>().transform, initialTransform);
+
+    // Add zoom behavior with initial transform
+    svg.call(d3.zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.5, 2])  //scale from 50% to 200%
+      .on('zoom', (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
+        g.attr('transform', event.transform.toString());
+      }));
+
+    g.attr('transform', initialTransform.toString());
 
     // Define clipPath for circles
     svg.append('defs')
@@ -100,8 +106,8 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
     // Append images
     node.append('image')
       .attr('xlink:href', d => d.data.image || '')
-      .attr('width', 2*nodeR)
-      .attr('height', 2*nodeR)
+      .attr('width', 2 * nodeR)
+      .attr('height', 2 * nodeR)
       .attr('x', -nodeR)
       .attr('y', -nodeR)
       .attr('clip-path', 'url(#circle-clip)');
@@ -122,8 +128,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .enter()
       .append('tspan')
       .attr('x', 0)
-      // .attr('dy', (d, i) => i === 0 ? '-3em' : '-1.5em') // Adjust vertical spacing
-      .attr('dy', (d, i) => i === 0 ? -1.6*nodeR+'px' : -.7*nodeR+'px') // Adjust vertical spacing
+      .attr('dy', (d, i) => i === 0 ? -1.6 * nodeR + 'px' : -0.7 * nodeR + 'px') // Adjust vertical spacing
       .text(d => d);
 
     // Add spouse nodes
@@ -137,8 +142,8 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
     // Append images for spouse nodes
     spouseNode.append('image')
       .attr('xlink:href', d => d.data.image || '')
-      .attr('width', 2*nodeR)
-      .attr('height', 2*nodeR)
+      .attr('width', 2 * nodeR)
+      .attr('height', 2 * nodeR)
       .attr('x', -nodeR)
       .attr('y', -nodeR)
       .attr('clip-path', 'url(#circle-clip)');
@@ -159,7 +164,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .enter()
       .append('tspan')
       .attr('x', 0)
-      .attr('dy', (d, i) => i === 0 ? -1.6*nodeR+'px' : -.7*nodeR+'px') // Adjust vertical spacing
+      .attr('dy', (d, i) => i === 0 ? -1.6 * nodeR + 'px' : -0.7 * nodeR + 'px') // Adjust vertical spacing
       .text(d => d);
 
     // Add spouse links
@@ -176,9 +181,14 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .attr('stroke-width', 2);
 
     const handleResize = () => {
-      svg.attr('width', window.innerWidth)
-         .attr('height', window.innerHeight);
-      treeLayout.size([window.innerWidth, window.innerHeight])(root);
+      const svgWidth = parentElement.clientWidth;
+      const svgHeight = parentElement.clientHeight;
+
+      svg.attr('width', svgWidth)
+         .attr('height', svgHeight);
+
+      treeLayout.size([svgWidth, svgHeight])(root);
+
       g.selectAll('.link')
          .attr('x1', (d: any) => (d.source as HierarchyPointNode<FamilyNode>).x || 0)
          .attr('y1', (d: any) => (d.source as HierarchyPointNode<FamilyNode>).y || 0)
@@ -191,7 +201,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       g.selectAll('.spouse-link')
          .attr('x1', (d: any) => (d.x || 0) + nodeR)
          .attr('y1', (d: any) => d.y || 0)
-         .attr('x2', (d: any) => (d.x || 0) + sOffset)
+         .attr('x2', (d: any) => (d.x || 0) + sOffset - nodeR)
          .attr('y2', (d: any) => d.y || 0);
     };
 
