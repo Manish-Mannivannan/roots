@@ -53,7 +53,8 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
     const g = d3.select(gRef.current);
 
     const root = d3.hierarchy<FamilyNode>(data);
-    const treeLayout = d3.tree<FamilyNode>().nodeSize([100, 200]);
+    const treeLayout = d3.tree<FamilyNode>()
+    .nodeSize([100, 200]); //Tree size [x,y]
     treeLayout(root);
 
     // Calculate the center offset based on the parent element's width

@@ -5,7 +5,7 @@ export interface FamilyNode {
 }
 
 export const familyData: FamilyNode = {
-  name: 'Great Grandparent',
+  name: 'Great-Grandparent',
   children: [
     {
       name: 'Grandparent 1',
