@@ -1,41 +1,21 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { HierarchyPointNode, HierarchyPointLink } from 'd3-hierarchy';
+import { FamilyTreeModal } from '../components';
+import { FamilyNode } from '@/app/types/interfaces';
 
 interface FamilyTreeProps {
   data: FamilyNode;
 }
 
-interface FamilyNode {
-  name: string;
-  spouse?: string;
-  children?: FamilyNode[];
-  image?: string; // Add an image property
-}
-
-// Helper function to randomly assign images
-const getRandomImage = () => (Math.random() > 0.5 ? 'img1.png' : 'img2.png');
-
-// Assign images to the family tree nodes
-const assignImages = (node: FamilyNode) => {
-  node.image = getRandomImage();
-  if (node.children) {
-    node.children.forEach(assignImages);
-  }
-};
-
 const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const gRef = useRef<SVGGElement | null>(null);
+  const [selectedNode, setSelectedNode] = useState<FamilyNode | null>(data); // Initialize with the first node
   const nodeR = 30; // Radius of each node
   const sOffset = 100; // Spouse node offset from main node
-
-  // Assign images before rendering
-  useEffect(() => {
-    assignImages(data);
-  }, [data]);
 
   useEffect(() => {
     if (!svgRef.current || !gRef.current) return;
@@ -102,7 +82,11 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .enter()
       .append('g')
       .attr('class', 'node')
-      .attr('transform', (d: HierarchyPointNode<FamilyNode>) => `translate(${d.x || 0},${d.y || 0})`);
+      .style('cursor', 'pointer')
+      .attr('transform', (d: HierarchyPointNode<FamilyNode>) => `translate(${d.x || 0},${d.y || 0})`)
+      .on('click', function (event, d) {
+        handleClick(d);
+      });
 
     // Append images
     node.append('image')
@@ -138,7 +122,11 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .enter()
       .append('g')
       .attr('class', 'spouse-node')
-      .attr('transform', (d: HierarchyPointNode<FamilyNode>) => `translate(${(d.x || 0) + sOffset},${d.y || 0})`);
+      .style('cursor', 'pointer')
+      .attr('transform', (d: HierarchyPointNode<FamilyNode>) => `translate(${(d.x || 0) + sOffset},${d.y || 0})`)
+      .on('click', function (event, d) {
+        handleClick(d);
+      });
 
     // Append images for spouse nodes
     spouseNode.append('image')
@@ -206,16 +194,27 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
          .attr('y2', (d: any) => d.y || 0);
     };
 
+    const handleClick = (d: HierarchyPointNode<FamilyNode>) => {
+      console.log('Clicked node:', d.data);
+      setSelectedNode(d.data); // Set the selected node
+      (document.getElementById("my_modal") as HTMLDialogElement).showModal(); // Show the modal
+    };
+    
     window.addEventListener('resize', handleResize);
 
     return () => window.removeEventListener('resize', handleResize);
   }, [data]);
 
   return (
-    <svg ref={svgRef} className="w-full h-full">
-      <g ref={gRef}></g>
-    </svg>
+    <>
+      <svg ref={svgRef} className="w-full h-full">
+        <g ref={gRef}></g>
+      </svg>
+      {selectedNode && <FamilyTreeModal familyNode={selectedNode} />} {/* Render the modal with the selected node */}
+    </>
   );
+  
+  
 };
 
 export default FamilyTree;

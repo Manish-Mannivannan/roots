@@ -7,11 +7,11 @@ const Header = () => {
         <MenuButton />
       </div>
       <div className="navbar-center h-full relative flex items-center pt-4">
-        <a
+        <p
           className="text-4xl font-bold bg-gradient-to-r from-palette3 via-palette4 to-palette5 bg-clip-text text-transparent"
         >
           Roots
-        </a>
+        </p>
       </div>
 
       <div className="navbar-end pt-4">
