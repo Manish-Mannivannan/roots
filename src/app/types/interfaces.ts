@@ -8,8 +8,11 @@ export interface FamilyNode {
   id: string;
   birthDate: string;
   address?: Address;
+  image?: string;
   spouse?: string;
   spouseId?: string;
+  spouseBD?: string;
+  spouseAdd?: Address;
+  spouseImage?: string;
   children?: FamilyNode[];
-  image?: string;
 }

@@ -14,6 +14,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const gRef = useRef<SVGGElement | null>(null);
   const [selectedNode, setSelectedNode] = useState<FamilyNode | null>(data); // Initialize with the first node
+  const [isSpouse, setIsSpouse] = useState<boolean>(false);
   const nodeR = 30; // Radius of each node
   const sOffset = 100; // Spouse node offset from main node
 
@@ -85,7 +86,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .style('cursor', 'pointer')
       .attr('transform', (d: HierarchyPointNode<FamilyNode>) => `translate(${d.x || 0},${d.y || 0})`)
       .on('click', function (event, d) {
-        handleClick(d);
+        handleClick(d, false);
       });
 
     // Append images
@@ -125,12 +126,12 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .style('cursor', 'pointer')
       .attr('transform', (d: HierarchyPointNode<FamilyNode>) => `translate(${(d.x || 0) + sOffset},${d.y || 0})`)
       .on('click', function (event, d) {
-        handleClick(d);
+        handleClick(d, true);
       });
 
     // Append images for spouse nodes
     spouseNode.append('image')
-      .attr('xlink:href', d => d.data.image || '')
+      .attr('xlink:href', d => d.data.spouseImage || 'placeholderPerson.svg')
       .attr('width', 2 * nodeR)
       .attr('height', 2 * nodeR)
       .attr('x', -nodeR)
@@ -194,9 +195,9 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
          .attr('y2', (d: any) => d.y || 0);
     };
 
-    const handleClick = (d: HierarchyPointNode<FamilyNode>) => {
-      console.log('Clicked node:', d.data);
+    const handleClick = (d: HierarchyPointNode<FamilyNode>, isSpouse: boolean) => {
       setSelectedNode(d.data); // Set the selected node
+      setIsSpouse(isSpouse); //Set spouse boolean
       (document.getElementById("my_modal") as HTMLDialogElement).showModal(); // Show the modal
     };
     
@@ -210,7 +211,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       <svg ref={svgRef} className="w-full h-full">
         <g ref={gRef}></g>
       </svg>
-      {selectedNode && <FamilyTreeModal familyNode={selectedNode} />} {/* Render the modal with the selected node */}
+      {selectedNode && <FamilyTreeModal familyNode={selectedNode} isSpouse={isSpouse} />} {/* Render the modal with the selected node */}
     </>
   );
   
