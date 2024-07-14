@@ -1,17 +1,13 @@
 import { Address, FamilyNode } from "@/app/types/interfaces";
-import moment from "moment";
-import { familyData } from "../../data/data";
-import { parentAddress } from "../../data/dataUtils";
+import { parentAddress, calculateAge } from "../../data/dataUtils";
+import { useCopyButtonState } from "../../data/uiElements";
 
 interface FamilyTreeModalProps {
   familyNode: FamilyNode;
   isSpouse: boolean;
 }
 
-const FamilyTreeModal: React.FC<FamilyTreeModalProps> = ({
-  familyNode,
-  isSpouse,
-}) => {
+const FamilyTreeModal: React.FC<FamilyTreeModalProps> = ({ familyNode, isSpouse }) => {
   const compAddress = (): Address | null => {
     if (familyNode.spouseAdd && isSpouse) return familyNode.spouseAdd; //if spouseadd and spouse true
     if (!familyNode.spouseAdd && isSpouse && familyNode.address)
@@ -22,6 +18,8 @@ const FamilyTreeModal: React.FC<FamilyTreeModalProps> = ({
   };
 
   const address = compAddress();
+  const age = calculateAge(familyNode, isSpouse);
+  const { copyButtonState, copyButtonTimer } = useCopyButtonState();
 
   return (
     <div>
@@ -31,15 +29,15 @@ const FamilyTreeModal: React.FC<FamilyTreeModalProps> = ({
           <div className="card bg-base-100 w-96 shadow-xl">
             <figure>
               <img
-                src={!isSpouse ? familyNode.image : familyNode.spouseImage}
+                src={isSpouse ? familyNode.spouseImage : familyNode.image}
                 alt="Shoes"
               />
             </figure>
             <div className="card-body max-h-40">
               <h2 className="card-title">
-                {!isSpouse ? familyNode.name : familyNode.spouse}
+                {isSpouse ? familyNode.spouse : familyNode.name}
               </h2>
-              <p>{!isSpouse ? familyNode.id : familyNode.spouseId}</p>
+              <p>{isSpouse ? familyNode.spouseId : familyNode.id}</p>
             </div>
           </div>
           {/* Right Card */}
@@ -47,16 +45,32 @@ const FamilyTreeModal: React.FC<FamilyTreeModalProps> = ({
             <p className="text-2xl font-bold bg-gradient-to-r from-palette3 via-palette4 to-palette5 bg-clip-text text-transparent">
               Age
             </p>
-            <p>
-              Born {!isSpouse ? familyNode.birthDate : familyNode.spouseBD} (
-              {moment(
-                !isSpouse ? familyNode.birthDate : familyNode.spouseBD,
-                "DD.MM.YYYY"
-              ).fromNow(true)}
-              )
-            </p>
+            <div className="flex w-full justify-around items-center">
+              <p>
+                Born: {isSpouse ? familyNode.spouseBD : familyNode.birthDate}
+                {(isSpouse ? familyNode.spouseDD : familyNode.deathDate) && (
+                  <>
+                    <br />
+                    Died:{" "}
+                    {isSpouse ? familyNode.spouseDD : familyNode.deathDate}
+                  </>
+                )}
+              </p>
+              <p className="text-2xl">
+                {age[0]}
+                <br />
+                {age[1]}
+              </p>
+            </div>
             <br />
-
+            <p className="text-2xl font-bold bg-gradient-to-r from-palette3 via-palette4 to-palette5 bg-clip-text text-transparent">
+              Contact
+            </p>
+            <a href="tel: +4733378901" className="underline">
+              +4733378901
+            </a>
+            <br />
+            <br />
             <p className="text-2xl font-bold bg-gradient-to-r from-palette3 via-palette4 to-palette5 bg-clip-text text-transparent">
               Address
             </p>
@@ -69,7 +83,10 @@ const FamilyTreeModal: React.FC<FamilyTreeModalProps> = ({
                 referrerPolicy="no-referrer-when-downgrade"
               ></iframe>
             )}
-            <p className="pt-1">{address ? address.name : "No Address"}</p>
+            <button onClick={copyButtonTimer} className="btn flex items-center justify-around bg-offWhite w-full mt-3 rounded">
+              {address ? address.name : "No Address"}
+              <img src={copyButtonState} alt="copy" width={16} />
+            </button>
           </div>
         </div>
         <form method="dialog" className="modal-backdrop">

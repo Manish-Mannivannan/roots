@@ -4,6 +4,7 @@ export const familyData: FamilyNode = {
   name: 'Great-Grandparent',
   id: '1',
   birthDate: '01.01.1940',
+  deathDate: '08.07.2003',
   address: {
     name: 'Eiffel Tower',
     map: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d10499.96680658501!2d2.2760488175283307!3d48.858368630958445!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e2964e34e2d%3A0x8ddca9ee380ef7e0!2sEiffel%20Tower!5e0!3m2!1sen!2suk!4v1720825274120!5m2!1sen!2suk&disable_default_ui=true&disableUI=true'
@@ -14,6 +15,7 @@ export const familyData: FamilyNode = {
       name: 'Grandparent 1',
       id: '1.1',
       birthDate: '01.01.1965',
+      deathDate: '13.02.2011',
       image: 'img2.png',
       spouse: 'Grandparent 1 Spouse',
       spouseId: '1.1.S',
@@ -37,6 +39,7 @@ export const familyData: FamilyNode = {
       spouse: 'Grandparent 2 Spouse',
       spouseId: '1.2.S',
       spouseBD: '01.01.1968',
+      spouseDD: '05.07.2021',
       spouseImage: 'img2.png',
       spouseAdd: {
         name: 'Notre Dame Cathedral',
