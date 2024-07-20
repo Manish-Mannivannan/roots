@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import MenuButton from "./menuButton";
 import { searchButtonClick } from '../familyTree/searchModal';
+import Image from 'next/image'
 
 const Header: React.FC = () => {
   const pathname = usePathname();
@@ -64,8 +65,8 @@ const Header: React.FC = () => {
             role="button"
             className="btn btn-ghost btn-circle avatar"
           >
-            <div className="w-10 rounded-full">
-              <img alt="Tailwind CSS Navbar component" src="people/img1.png" />
+            <div className="w-10">
+              <Image alt="Tailwind CSS Navbar component" src="/people/img1.png" className='rounded-full' layout='fill'/>
             </div>
           </div>
           <ul

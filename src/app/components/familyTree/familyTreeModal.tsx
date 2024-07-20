@@ -1,6 +1,7 @@
 import { Address, FamilyNode } from "@/app/types/interfaces";
 import { parentAddress, calculateAge } from "../../data/dataUtils";
 import { useCopyButtonState } from "../../data/uiElements";
+import Image from 'next/image'
 
 interface FamilyTreeModalProps {
   familyNode: FamilyNode;
@@ -22,15 +23,20 @@ const FamilyTreeModal: React.FC<FamilyTreeModalProps> = ({ familyNode, isSpouse 
   const { copyButtonState, copyButtonTimer } = useCopyButtonState();
 
   return (
-
       <dialog id="my_modal" className="modal">
         <div className="modal-box bg-transparent shadow-none max-w-4xl max-h-full flex justify-between">
           {/* Left Card */}
           <div className="card bg-base-100 w-96 shadow-xl">
-            <figure>
-              <img
-                src={isSpouse ? "people/" + familyNode.spouseImage : "people/" + familyNode.image || "people/placeholderPerson.svg"}
-                alt="Shoes"
+            <figure className="relative w-full h-96">
+              <Image
+                src={
+                  isSpouse
+                    ? "/people/" + familyNode.spouseImage
+                    : "/people/" + familyNode.image || "/people/placeholderPerson.svg"
+                }
+                alt="Person"
+                layout="fill"
+                objectFit="cover"
               />
             </figure>
             <div className="card-body max-h-40">
@@ -85,7 +91,7 @@ const FamilyTreeModal: React.FC<FamilyTreeModalProps> = ({ familyNode, isSpouse 
             )}
             <button onClick={copyButtonTimer} className="btn flex items-center justify-around bg-offWhite w-full mt-3 rounded">
               {address ? address.name : "No Address"}
-              <img src={copyButtonState} alt="copy" width={16} />
+              <Image src={copyButtonState} alt="copy" width={16} height={20}/>
             </button>
           </div>
         </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { findMembersWithName } from "../../data/dataUtils";
 import { FamilyNode } from "../../types/interfaces";
+import Image from 'next/image'
 
 export const searchButtonClick = () => {
   (document.getElementById("my_modal_2") as HTMLDialogElement).showModal();
@@ -52,7 +53,7 @@ const SearchModal = () => {
                   className="btn btn-ghost btn-circle avatar"
                 >
                   <div className="min-w-16 rounded-full scale-150">
-                    <img alt="Tailwind CSS Navbar component" src={"people/" + member.image} />
+                    <Image alt="Tailwind CSS Navbar component" src={"/people/" + member.image} layout="fill"/>
                   </div>
                 </div>
                 <div className="flex flex-col justify-center items-center text-center text-offWhite text-lg h-1/4">
