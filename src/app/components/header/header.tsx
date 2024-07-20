@@ -2,12 +2,9 @@
 
 import { usePathname } from 'next/navigation';
 import MenuButton from "./menuButton";
+import { searchButtonClick } from '../familyTree/searchModal';
 
-interface HeaderProps {
-  searchButtonClick: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ searchButtonClick }) => {
+const Header: React.FC = () => {
   const pathname = usePathname();
 
   return (

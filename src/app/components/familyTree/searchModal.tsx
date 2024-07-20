@@ -4,6 +4,10 @@ import { useState } from "react";
 import { findMembersWithName } from "../../data/dataUtils";
 import { FamilyNode } from "../../types/interfaces";
 
+export const searchButtonClick = () => {
+  (document.getElementById("my_modal_2") as HTMLDialogElement).showModal();
+};
+
 const SearchModal = () => {
   const [searchResults, setSearchResults] = useState<FamilyNode[]>([]);
 

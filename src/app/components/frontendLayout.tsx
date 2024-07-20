@@ -3,13 +3,12 @@ import { Header } from "./components";
 
 interface FrontendLayoutProps {
   children: ReactNode;
-  searchButtonClick: () => void;
 }
 
-const FrontendLayout: React.FC<FrontendLayoutProps> = ({ children, searchButtonClick }) => {
+const FrontendLayout: React.FC<FrontendLayoutProps> = ({ children }) => {
   return (
     <>
-      <Header searchButtonClick={searchButtonClick} />
+      <Header />
       {children}
     </>
   );
