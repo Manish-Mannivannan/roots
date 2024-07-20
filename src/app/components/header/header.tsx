@@ -1,6 +1,15 @@
+"use client"
+
+import { usePathname } from 'next/navigation';
 import MenuButton from "./menuButton";
 
-const Header = () => {
+interface HeaderProps {
+  searchButtonClick: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ searchButtonClick }) => {
+  const pathname = usePathname();
+
   return (
     <div className="navbar bg-base-100 w-11/12 rounded-xl items-start">
       <div className="navbar-start">
@@ -15,22 +24,24 @@ const Header = () => {
       </div>
 
       <div className="navbar-end pt-4">
-        <button className="btn btn-ghost btn-circle">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </button>
+        {pathname === '/' && (
+          <button className="btn btn-ghost btn-circle" onClick={searchButtonClick}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </button>
+        )}
         <button className="btn btn-ghost btn-circle">
           <div className="indicator">
             <svg
@@ -57,7 +68,7 @@ const Header = () => {
             className="btn btn-ghost btn-circle avatar"
           >
             <div className="w-10 rounded-full">
-              <img alt="Tailwind CSS Navbar component" src="img1.png" />
+              <img alt="Tailwind CSS Navbar component" src="people/img1.png" />
             </div>
           </div>
           <ul
@@ -84,3 +95,4 @@ const Header = () => {
 };
 
 export default Header;
+

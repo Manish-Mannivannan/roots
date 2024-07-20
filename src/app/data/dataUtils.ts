@@ -53,3 +53,36 @@ export const calculateAge = (familyNode: FamilyNode, isSpouse: boolean): string 
 
   return [`${years}` + " years",`${months}`+ " months"];
 };
+
+export const findMembersWithName = (searchTerm: string): FamilyNode[] => {
+  const result: FamilyNode[] = [];
+
+  if (searchTerm === "" || searchTerm === null) return result; 
+
+  const searchFamilyTree = (node: FamilyNode) => {
+    if (node.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+      result.push(node);
+    }
+
+    if (node.spouse && node.spouse.toLowerCase().includes(searchTerm.toLowerCase())) {
+      result.push({
+        ...node,
+        name: node.spouse,
+        id: node.spouseId || "",
+        birthDate: node.spouseBD || "",
+        deathDate: node.spouseDD,
+        address: node.spouseAdd,
+        image: node.spouseImage,
+        children: []
+      });
+    }
+
+    if (node.children) {
+      node.children.forEach(searchFamilyTree);
+    }
+  };
+
+  searchFamilyTree(familyData);
+
+  return result;
+};

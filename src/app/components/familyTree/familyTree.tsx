@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { HierarchyPointNode, HierarchyPointLink } from 'd3-hierarchy';
-import { FamilyTreeModal } from '../components';
+import { FamilyTreeModal, SearchModal } from '../components';
 import { FamilyNode } from '@/app/types/interfaces';
 
 interface FamilyTreeProps {
@@ -91,7 +91,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
 
     // Append images
     node.append('image')
-      .attr('xlink:href', d => d.data.image || '')
+      .attr('xlink:href', d => 'people/' + d.data.image || 'people/placeholderPerson.svg')
       .attr('width', 2 * nodeR)
       .attr('height', 2 * nodeR)
       .attr('x', -nodeR)
@@ -110,7 +110,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .attr('font-size', 12)
       .attr('fill', '#333')
       .selectAll('tspan')
-      .data(d => d.data.name.split(' '))
+      .data(d => d.data.name.split(' ').reverse())
       .enter()
       .append('tspan')
       .attr('x', 0)
@@ -131,7 +131,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
 
     // Append images for spouse nodes
     spouseNode.append('image')
-      .attr('xlink:href', d => d.data.spouseImage || 'placeholderPerson.svg')
+      .attr('xlink:href', d => 'people/' + d.data.spouseImage || 'person/placeholderPerson.svg')
       .attr('width', 2 * nodeR)
       .attr('height', 2 * nodeR)
       .attr('x', -nodeR)
@@ -150,7 +150,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .attr('font-size', 12)
       .attr('fill', '#333')
       .selectAll('tspan')
-      .data(d => (d.data.spouse || "").split(' '))
+      .data(d => (d.data.spouse || "").split(' ').reverse())
       .enter()
       .append('tspan')
       .attr('x', 0)
@@ -212,6 +212,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
         <g ref={gRef}></g>
       </svg>
       {selectedNode && <FamilyTreeModal familyNode={selectedNode} isSpouse={isSpouse} />} {/* Render the modal with the selected node */}
+      <SearchModal />
     </>
   );
   

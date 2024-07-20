@@ -22,14 +22,14 @@ const FamilyTreeModal: React.FC<FamilyTreeModalProps> = ({ familyNode, isSpouse 
   const { copyButtonState, copyButtonTimer } = useCopyButtonState();
 
   return (
-    <div>
+
       <dialog id="my_modal" className="modal">
         <div className="modal-box bg-transparent shadow-none max-w-4xl max-h-full flex justify-between">
           {/* Left Card */}
           <div className="card bg-base-100 w-96 shadow-xl">
             <figure>
               <img
-                src={isSpouse ? familyNode.spouseImage : familyNode.image}
+                src={isSpouse ? "people/" + familyNode.spouseImage : "people/" + familyNode.image || "people/placeholderPerson.svg"}
                 alt="Shoes"
               />
             </figure>
@@ -93,7 +93,6 @@ const FamilyTreeModal: React.FC<FamilyTreeModalProps> = ({ familyNode, isSpouse 
           <button>close</button>
         </form>
       </dialog>
-    </div>
   );
 };
 

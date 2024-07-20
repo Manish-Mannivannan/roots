@@ -3,12 +3,12 @@
 import { useState } from "react";
 
 export const useCopyButtonState = () => {
-  const [copyButtonState, setCopyButtonState] = useState<string>("copy.svg");
+  const [copyButtonState, setCopyButtonState] = useState<string>("UI/copy.svg");
 
   const copyButtonTimer = () => {
-    setCopyButtonState("copyConfirm.svg");
+    setCopyButtonState("UI/copyConfirm.svg");
     setTimeout(() => {
-      setCopyButtonState("copy.svg");
+      setCopyButtonState("UI/copy.svg");
     }, 3000);
   };
 
