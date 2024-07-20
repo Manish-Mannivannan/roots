@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react";
 import { findMembersWithName } from "../../data/dataUtils";
 import { FamilyNode } from "../../types/interfaces";
