@@ -23,8 +23,24 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Cache npm dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node-version }}-
+
       - name: Install dependencies
         run: npm install
+
+      - name: Cache Next.js build
+        uses: actions/cache@v2
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-
 
       - name: Build project
         run: npm run build
