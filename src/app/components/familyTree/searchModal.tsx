@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react";
-import { findMembersWithName } from "../../data/dataUtils";
+import { getMembersWithName } from "../../data/dataUtils";
 import { FamilyNode } from "../../types/interfaces";
 import Image from 'next/image'
 
@@ -14,7 +14,7 @@ const SearchModal = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let searchTerm = e.target.value;
-    setSearchResults(findMembersWithName(searchTerm));
+    setSearchResults(getMembersWithName(searchTerm));
   };
 
   return (
@@ -52,8 +52,8 @@ const SearchModal = () => {
                   role="button"
                   className="btn btn-ghost btn-circle avatar"
                 >
-                  <div className="min-w-16 rounded-full scale-150">
-                    <Image alt="Tailwind CSS Navbar component" src={"/people/" + member.image} layout="fill"/>
+                  <div className="min-w-20 rounded-full scale-150">
+                    <Image alt="Tailwind CSS Navbar component" src={"/people/" + member.image} fill style={{ objectFit: 'cover' }}/>
                   </div>
                 </div>
                 <div className="flex flex-col justify-center items-center text-center text-offWhite text-lg h-1/4">

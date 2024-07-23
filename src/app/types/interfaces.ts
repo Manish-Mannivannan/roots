@@ -18,3 +18,10 @@ export interface FamilyNode {
   spouseImage?: string;
   children?: FamilyNode[];
 }
+
+export interface AboutEvent {
+  familymemberId: string;
+  date: string; // in dd-mm-yyyy format
+  title: string;
+  description: string;
+}

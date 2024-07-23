@@ -2,19 +2,38 @@ import { FamilyNode, Address } from '../types/interfaces';
 import { familyData } from '../data/data';
 import moment from "moment";
 
-export const findNodeById = (node: FamilyNode, id: string): FamilyNode | null => {
+export const getNodeById = (node: FamilyNode, id: string): FamilyNode | null => {
+  // Check for exact match
   if (node.id === id) {
     return node;
   }
+  // Check for spouse match
+  if (node.spouseId === id) {
+    return node;
+  }
+  // Recursively check children
   if (node.children) {
     for (const child of node.children) {
-      const found = findNodeById(child, id);
+      const found = getNodeById(child, id);
       if (found) {
         return found;
       }
     }
   }
   return null;
+};
+
+export const getNodesByIDs = (IDs: string[]): FamilyNode[] => {
+  const result: FamilyNode[] = [];
+
+  if (IDs.length < 0 || IDs === null) return result;
+
+  IDs.forEach(id => {
+    const IdResult = getNodeById(familyData, id);
+    if (IdResult != null) result.push(IdResult);
+  });
+
+  return result;
 };
 
 export const getParentId = (id: string): string | null => {
@@ -28,7 +47,7 @@ export const parentAddress = (id: string): Address | null => {
   const parentId = getParentId(id);
   if (!parentId) return null;
 
-  const parentNode = findNodeById(familyData, parentId);
+  const parentNode = getNodeById(familyData, parentId);
   if (parentNode && parentNode.address && parentNode.address.name) {
     return parentNode.address;
   }
@@ -54,7 +73,7 @@ export const calculateAge = (familyNode: FamilyNode, isSpouse: boolean): string 
   return [`${years}` + " years",`${months}`+ " months"];
 };
 
-export const findMembersWithName = (searchTerm: string): FamilyNode[] => {
+export const getMembersWithName = (searchTerm: string): FamilyNode[] => {
   const result: FamilyNode[] = [];
 
   if (searchTerm === "" || searchTerm === null) return result; 
