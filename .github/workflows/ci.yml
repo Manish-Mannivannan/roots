@@ -16,15 +16,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Cache npm dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
@@ -35,7 +35,7 @@ jobs:
         run: npm install
 
       - name: Cache Next.js build
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
