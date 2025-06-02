@@ -35,8 +35,8 @@ const FamilyTreeModal: React.FC<FamilyTreeModalProps> = ({ familyNode, isSpouse 
                     : "/people/" + familyNode.image || "/people/placeholderPerson.svg"
                 }
                 alt="Person"
-                layout="fill"
-                objectFit="cover"
+                fill
+                style={{objectFit:"cover"}}
               />
             </figure>
             <div className="card-body max-h-40">

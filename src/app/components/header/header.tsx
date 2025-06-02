@@ -66,7 +66,7 @@ const Header: React.FC = () => {
             className="btn btn-ghost btn-circle avatar"
           >
             <div className="w-10">
-              <Image alt="Tailwind CSS Navbar component" src="/people/img1.png" className='rounded-full' layout='fill'/>
+              <Image alt="Tailwind CSS Navbar component" src="/people/img1.png" className='rounded-full' fill/>
             </div>
           </div>
           <ul
