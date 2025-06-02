@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
 
     steps:
       - name: Checkout repository
@@ -52,5 +52,5 @@ jobs:
 
       - name: Check if site is running
         run: |
-          sleep 5 # Give the server a few seconds to start
+          sleep 5 # Allow time for the server to start
           curl -f http://localhost:3000 || exit 1
