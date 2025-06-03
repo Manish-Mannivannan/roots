@@ -5,11 +5,15 @@ import { getMembersWithName } from "../../data/dataUtils";
 import { FamilyNode } from "../../types/interfaces";
 import Image from 'next/image'
 
+interface SearchModalProps {
+  onSelect: (member: FamilyNode) => void;
+}
+
 export const searchButtonClick = () => {
   (document.getElementById("my_modal_2") as HTMLDialogElement).showModal();
 };
 
-const SearchModal = () => {
+const SearchModal: React.FC<SearchModalProps> = ({ onSelect }) => {
   const [searchResults, setSearchResults] = useState<FamilyNode[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,6 +50,7 @@ const SearchModal = () => {
               <div
                 key={member.id}
                 className="w-44 h-52 rounded flex flex-col items-center justify-around bg-gradient-to-b from-palette3 via-palette4 to-palette5"
+                onClick={() => onSelect(member)}
               >
                 <div
                   tabIndex={0}

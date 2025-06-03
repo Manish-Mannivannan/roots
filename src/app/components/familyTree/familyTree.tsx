@@ -18,6 +18,28 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
   const nodeR = 30; // Radius of each node
   const sOffset = 100; // Spouse node offset from main node
 
+  const handleSelectFromSearch = (member: FamilyNode) => {
+    // 1) Close the search modal
+    const searchDialog = document.getElementById(
+      "my_modal_2"
+    ) as HTMLDialogElement;
+    if (searchDialog) searchDialog.close();
+
+    // 2) Open the family‐tree modal for that member
+    setSelectedNode(member);
+    setIsSpouse(false);
+    const treeDialog = document.getElementById(
+      "my_modal"
+    ) as HTMLDialogElement;
+    if (treeDialog) treeDialog.showModal();
+  };
+
+  const handleClick = (d: HierarchyPointNode<FamilyNode>, isSpouse: boolean) => {
+    setSelectedNode(d.data); // Set the selected node
+    setIsSpouse(isSpouse); //Set spouse boolean
+    (document.getElementById("my_modal") as HTMLDialogElement).showModal(); // Show the modal
+  };
+
   useEffect(() => {
     if (!svgRef.current || !gRef.current) return;
 
@@ -194,12 +216,6 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
          .attr('x2', (d: any) => (d.x || 0) + sOffset - nodeR)
          .attr('y2', (d: any) => d.y || 0);
     };
-
-    const handleClick = (d: HierarchyPointNode<FamilyNode>, isSpouse: boolean) => {
-      setSelectedNode(d.data); // Set the selected node
-      setIsSpouse(isSpouse); //Set spouse boolean
-      (document.getElementById("my_modal") as HTMLDialogElement).showModal(); // Show the modal
-    };
     
     window.addEventListener('resize', handleResize);
 
@@ -212,7 +228,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
         <g ref={gRef}></g>
       </svg>
       {selectedNode && <FamilyTreeModal familyNode={selectedNode} isSpouse={isSpouse} />} {/* Render the modal with the selected node */}
-      <SearchModal />
+      <SearchModal onSelect={handleSelectFromSearch}/>
     </>
   );
   
