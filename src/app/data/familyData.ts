@@ -1,6 +1,6 @@
 import { FamilyNode } from "../types/interfaces";
 
-export const familyData: FamilyNode = {
+const familyData: FamilyNode = {
   name: 'Great-Grandparent',
   id: '1',
   birthDate: '01.01.1940',
@@ -72,3 +72,5 @@ export const familyData: FamilyNode = {
     },
   ]
 };
+
+export default familyData;

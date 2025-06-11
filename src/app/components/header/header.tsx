@@ -22,7 +22,7 @@ const Header: React.FC = () => {
       </div>
 
       <div className="navbar-end pt-4">
-        {pathname === '/' && (
+        {pathname === '/familytree' && (
           <button className="btn btn-ghost btn-circle" onClick={searchButtonClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"

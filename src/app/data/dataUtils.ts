@@ -1,5 +1,5 @@
 import { FamilyNode, Address } from '../types/interfaces';
-import { familyData } from '../data/data';
+import familyData from './familyData';
 import moment from "moment";
 
 export const getNodeById = (node: FamilyNode, id: string): FamilyNode | null => {
