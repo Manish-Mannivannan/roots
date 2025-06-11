@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./styles/globals.css";
+//Turbopack doesn't support PostCSS/Tailwind pipeline yet 
+// so we have to work around it by building a css based in global.css and import it as so tubopack considers it normal css
+// and not Tailwind CSS that it will ignore
+// "dev": "npm run build:css && next dev --turbopack",
+// "build:css": "tailwindcss -i src/app/styles/globals.css -o src/app/styles/tailwind.css --minify"
+import "./styles/tailwind.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
