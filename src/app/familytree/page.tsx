@@ -1,7 +1,7 @@
 "use client"
 
 import FrontendLayout from "../components/frontendLayout";
-import FamilyTree from "../components/familyTree/familyTree";
+import { FamilyTree } from '../familytree/familyTreeExports';
 import familyData from "../data/familyData";
 
 export default function Home() {

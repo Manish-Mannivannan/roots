@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react";
-import { getMembersWithName } from "../../data/dataUtils";
-import { FamilyNode } from "../../types/interfaces";
+import { getMembersWithName } from "../data/dataUtils";
+import { FamilyNode } from "../types/interfaces";
 import Image from 'next/image'
 
 interface SearchModalProps {

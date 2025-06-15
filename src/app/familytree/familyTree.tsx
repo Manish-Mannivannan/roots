@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { HierarchyPointNode, HierarchyPointLink } from 'd3-hierarchy';
-import { FamilyTreeModal, SearchModal } from '../components';
+import { FamilyTreeModal, SearchModal } from '../familytree/familyTreeExports';
 import { FamilyNode } from '@/app/types/interfaces';
 
 interface FamilyTreeProps {

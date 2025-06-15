@@ -1,6 +1,6 @@
 import { Address, FamilyNode } from "@/app/types/interfaces";
-import { parentAddress, calculateAge } from "../../data/dataUtils";
-import { useCopyButtonState } from "../../data/uiElements";
+import { parentAddress, calculateAge } from "../data/dataUtils";
+import { useCopyButtonState } from "../data/uiElements";
 import Image from 'next/image'
 
 interface FamilyTreeModalProps {

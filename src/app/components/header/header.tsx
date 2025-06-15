@@ -2,14 +2,14 @@
 
 import { usePathname } from 'next/navigation';
 import MenuButton from "./menuButton";
-import { searchButtonClick } from '../familyTree/searchModal';
+import { searchButtonClick } from '../../familytree/searchModal';
 import Image from 'next/image'
 
 const Header: React.FC = () => {
   const pathname = usePathname();
 
   return (
-    <div className="navbar bg-base-100 w-11/12 rounded-xl items-start">
+    <main className="navbar bg-base-100 w-11/12 rounded-xl items-start">
       <div className="navbar-start">
         <MenuButton />
       </div>
@@ -88,7 +88,7 @@ const Header: React.FC = () => {
           </ul>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

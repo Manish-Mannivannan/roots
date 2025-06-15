@@ -14,7 +14,8 @@ const MenuButton = () => {
   const visiblePages = pages.filter((p) => p.href !== pathname);
 
   return (
-    <div className="collapse bg-base-100 rounded-box">
+    <main className="z-10">
+      <div className="collapse bg-base-100 rounded-box">
       <input type="checkbox" className="peer" />
       <div className="collapse-title">
         <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
@@ -36,22 +37,23 @@ const MenuButton = () => {
         </div>
       </div>
 
-      <div className="collapse-content flex items-center">
-        {visiblePages.map((page, idx) => (
-          <Fragment key={page.href}>
-            <Link href={page.href} className="px-2">
-              {page.label}
-            </Link>
-            {/* only show OR between items, not after the last */}
-            {idx < visiblePages.length - 1 && (
-              <div className="divider divider-horizontal divider-neutral h-20 gap-1">
-                OR
-              </div>
-            )}
-          </Fragment>
-        ))}
+        <div className="collapse-content flex items-center">
+          {visiblePages.map((page, idx) => (
+            <Fragment key={page.href}>
+              <Link href={page.href} className="px-2">
+                {page.label}
+              </Link>
+              {/* only show OR between items, not after the last */}
+              {idx < visiblePages.length - 1 && (
+                <div className="divider divider-horizontal divider-neutral h-20 gap-1">
+                  OR
+                </div>
+              )}
+            </Fragment>
+          ))}
+        </div>
       </div>
-    </div>
+    </main>
   );
 };
 
