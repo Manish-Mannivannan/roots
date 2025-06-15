@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { pageAtom, pages } from "./UI";
 import { Bone, BoxGeometry, Float32BufferAttribute, Group, MeshStandardMaterial, Skeleton, SkinnedMesh, Uint16BufferAttribute, Vector3, Color, SkeletonHelper, SRGBColorSpace } from "three";
 import { useCursor, useHelper, useTexture } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, ThreeElements } from "@react-three/fiber";
 import { degToRad, MathUtils } from "three/src/math/MathUtils.js";
 import { useAtom } from "jotai";
 import { easing } from "maath";
@@ -19,6 +19,8 @@ const insideCurveStrength = 0.18; //Constrols the strength of the curve
 const outsideCurveStrength = 0.05; //Constrols the strength of the curve
 const turningCurveStrength = 0.09; //Constrols the strength of the curve
 
+const DRAG_THRESHOLD = 5;
+
 const pageGeometry = new BoxGeometry(
   PAGE_WIDTH,
   PAGE_HEIGHT,
@@ -30,8 +32,8 @@ const pageGeometry = new BoxGeometry(
 pageGeometry.translate(PAGE_WIDTH / 2, 0, 0)
 const position = pageGeometry.attributes.position;
 const vertex = new Vector3();
-const skinIndexes = [];
-const skinWeights = [];
+const skinIndexes: number[] = [];
+const skinWeights: number[] = [];
 
 for (let i = 0; i < position.count; i++) {
   //All VERTICES
@@ -79,7 +81,16 @@ pages.forEach((page) => {
   useTexture.preload(`/textures/book-cover-roughness.jpg`);
 });
 
-const Page = ({number, front, back, page, opened, bookClosed, ...props}) => {
+type PageProps = ThreeElements["group"] & {
+  number: number;
+  front: string;
+  back: string;
+  page: number;
+  opened: boolean;
+  bookClosed: boolean;
+};
+
+const Page: React.FC<PageProps> = ({number, front, back, page, opened, bookClosed, ...props}) => {
   const [picture, picture2, pictureRoughness] = useTexture([
     `/aboutTextures/${front}.jpg`,
     `/aboutTextures/${back}.jpg`,
@@ -88,14 +99,17 @@ const Page = ({number, front, back, page, opened, bookClosed, ...props}) => {
       : []),
   ]);
   picture.colorSpace = picture2.colorSpace = SRGBColorSpace;
-  const group = useRef();
-  const turnedAt = useRef(0);
-  const lastOpened = useRef(opened)
+  const group = useRef<Group>(null);
+  const turnedAt = useRef<number>(0);
+  const lastOpened = useRef<boolean>(opened)
 
-  const skinnedMeshRef = useRef();
+  const pointerStart = useRef({ x: 0, y: 0 });
+  const isDragging = useRef(false);
+
+  const skinnedMeshRef = useRef<SkinnedMesh>(null);
 
   const manualSkinnedMesh = useMemo(() => {
-    const bones = [];
+    const bones: Bone[] = [];
     for (let i = 0; i <= PAGE_SEGMENTS; i++) {
       let bone = new Bone();
       bones.push(bone);
@@ -157,19 +171,20 @@ const Page = ({number, front, back, page, opened, bookClosed, ...props}) => {
     }
 
     const emissiveIntensity = highlighted ? 0.22 : 0;
-    skinnedMeshRef.current.material[4].emissiveIntensity = 
-      skinnedMeshRef.current.material[5].emissiveIntensity = MathUtils.lerp(
-        skinnedMeshRef.current.material[4].emissiveIntensity,
+    const mats = skinnedMeshRef.current.material as MeshStandardMaterial[];
+    mats[4].emissiveIntensity = 
+      mats[5].emissiveIntensity = MathUtils.lerp(
+        mats[4].emissiveIntensity,
         emissiveIntensity,
         0.1
       )
 
     if (lastOpened.current !== opened) {
-      turnedAt.current = +new Date();
+      turnedAt.current = Date.now();
       lastOpened.current = opened;
     }
 
-    let turningTime = Math.min(400, new Date() - turnedAt.current) / 400;
+    let turningTime = Math.min(400, Date.now() - turnedAt.current) / 400;
     turningTime = Math.sin(turningTime * Math.PI);
 
     let targetRotation = opened ? -Math.PI / 2 : Math.PI / 2;
@@ -190,6 +205,7 @@ const Page = ({number, front, back, page, opened, bookClosed, ...props}) => {
         turningCurveStrength * turningIntensity * targetRotation;
       
       let foldRotationAngle = degToRad(Math.sign(targetRotation) * 2);
+      const foldIntensity = i > 8 ? Math.sin(i * Math.PI * (1 / bones.length) - 0.5) * turningTime : 0;
       if (bookClosed) {
         if (i === 0) {
           rotationAngle = targetRotation;
@@ -199,22 +215,23 @@ const Page = ({number, front, back, page, opened, bookClosed, ...props}) => {
           rotationAngle = 0;
         }
       }
-      easing.dampAngle(
-        target.rotation,
-        "y",
-        rotationAngle,
-        easingFactor,
-        delta
-      )
-
-      const foldIntensity = i > 8 ? Math.sin(i * Math.PI * (1 / bones.length) - 0.5) * turningTime : 0;
-      easing.dampAngle(
-        target.rotation,
-        "x",
-        foldRotationAngle * foldIntensity,
-        easingFactorFold,
-        delta
-      )
+      if (target) {
+        easing.dampAngle(
+          target.rotation,
+          "y",
+          rotationAngle,
+          easingFactor,
+          delta
+        )
+  
+        easing.dampAngle(
+          target.rotation,
+          "x",
+          foldRotationAngle * foldIntensity,
+          easingFactorFold,
+          delta
+        )
+      }
     }
 
   })
@@ -235,10 +252,25 @@ const Page = ({number, front, back, page, opened, bookClosed, ...props}) => {
         e.stopPropagation();
         setHighlighted(false);
       }}
-      onClick={(e) => {
+      onPointerDown={(e) => {
         e.stopPropagation();
-        setPage(opened ? number : number + 1);
+        setHighlighted(true)
+        isDragging.current = false;
+        pointerStart.current = { x: e.clientX, y: e.clientY };
+      }}
+      onPointerMove={(e) => {
+        const dx = e.clientX - pointerStart.current.x;
+        const dy = e.clientY - pointerStart.current.y;
+        if (dx * dx + dy * dy > DRAG_THRESHOLD * DRAG_THRESHOLD) {
+          isDragging.current = true;
+        }
+      }}
+      onPointerUp={(e) => {
+        e.stopPropagation();
         setHighlighted(false)
+        if (!isDragging.current) {
+          setPage(opened ? number : number + 1);
+        }
       }}
     >
       <primitive 
@@ -255,31 +287,19 @@ const Book  = ({...props}) => {
   const [delayedPage, setDelayedPage] = useState(page);
 
   useEffect(() => {
-    let timeout;
-    const goToPage = () => {
+    let timeout: ReturnType<typeof setTimeout>;
+    function goToPage() {
       setDelayedPage((delayedPage) => {
-        if (page === delayedPage) {
-          return delayedPage
-        } else {
-          timeout = setTimeout(
-            () => {
-              goToPage();
-            },
-            Math.abs(page - delayedPage) > 2 ? 50 : 150
-          )
-          if (page > delayedPage) {
-            return delayedPage + 1;
-          }
-          if (page < delayedPage) {
-            return delayedPage - 1;
-          }
-        }
-      })
+        if (delayedPage === page) return delayedPage;
+        timeout = setTimeout(
+          goToPage,
+          Math.abs(page - delayedPage) > 2 ? 58 : 150
+        );
+        return delayedPage < page ? delayedPage + 1 : delayedPage - 1;
+      });
     }
     goToPage();
-    return () => {
-      clearTimeout(timeout)
-    }
+    return () => clearTimeout(timeout);
   }, [page])
 
   return (

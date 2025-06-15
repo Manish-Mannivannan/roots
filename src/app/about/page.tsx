@@ -8,7 +8,7 @@ import UI from "./UI"
 
 const AboutPage: React.FC = () => {
   return (
-    <main className="relative w-screen h-screen">
+    <main className="relative w-full h-screen">
       {/* Overlay UI & loading indicator */}
       <UI />
       <Loader />

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { atom, useAtom } from "jotai";
 import Marquee from "./marquee";
 
@@ -55,8 +55,10 @@ const UI: React.FC = () => {
   const [page, setPage] = useAtom(pageAtom);
 
   useEffect(() => {
-    const audio = new Audio("/audios/page-flip-01a.mp3")
-    audio.play()
+    if(page){
+      const audio = new Audio("/audios/page-flip-01a.mp3")
+      audio.play()
+    }
   }, [page])
   
   return (
