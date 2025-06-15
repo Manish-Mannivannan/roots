@@ -2,10 +2,12 @@
 
 import React from "react";
 import { Environment, OrbitControls } from "@react-three/drei";
+import Book from "./book";
 
 const Experience: React.FC = () => {
   return (
     <>
+      <Book />
       {/* OrbitControls lets you rotate/zoom the scene with the mouse */}
       <OrbitControls />
 

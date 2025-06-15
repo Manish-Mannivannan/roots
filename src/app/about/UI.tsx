@@ -1,8 +1,8 @@
-// src/app/components/UI.tsx
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
+import { atom, useAtom } from "jotai";
+import Marquee from "./marquee";
 
 // 1) Your list of picture keys
 const pictures: string[] = [
@@ -31,7 +31,8 @@ interface Page {
 }
 
 // 3) Build your pages array exactly as before
-const pages: Page[] = [];
+export const pageAtom = atom(0);
+export const pages: Page[] = [];
 
 // cover
 pages.push({ front: "book-cover", back: pictures[0] });
@@ -51,9 +52,8 @@ pages.push({
 });
 
 const UI: React.FC = () => {
-  // 4) Local React state replaces Jotai atom
-  const [page, setPage] = useState<number>(0);
-
+  const [page, setPage] = useAtom(pageAtom);
+  
   return (
     <>
       {/* BUTTON BAR */}
@@ -99,69 +99,7 @@ const UI: React.FC = () => {
         </div>
       </main>
 
-      {/* SCROLLING HEADER */}
-      <div className="fixed inset-0 flex items-center -rotate-2 select-none">
-        <div className="relative">
-          {/* First marquee */}
-          <div className="bg-white/0 animate-horizontal-scroll flex items-center gap-8 w-max px-8">
-            <h1 className="shrink-0 text-white text-10xl font-black">
-              Wawa Sensei
-            </h1>
-            <h2 className="shrink-0 text-white text-8xl italic font-light">
-              React Three Fiber
-            </h2>
-            <h2 className="shrink-0 text-white text-12xl font-bold">
-              Three.js
-            </h2>
-            <h2 className="shrink-0 text-transparent text-12xl font-bold italic outline-text">
-              Ultimate Guide
-            </h2>
-            <h2 className="shrink-0 text-white text-9xl font-medium">
-              Tutorials
-            </h2>
-            <h2 className="shrink-0 text-white text-9xl font-extralight italic">
-              Learn
-            </h2>
-            <h2 className="shrink-0 text-white text-13xl font-bold">
-              Practice
-            </h2>
-            <h2 className="shrink-0 text-transparent text-13xl font-bold outline-text italic">
-              Creative
-            </h2>
-          </div>
-          {/* Second marquee overlay */}
-          <div className="absolute top-0 left-0 bg-white/0 animate-horizontal-scroll-2 flex items-center gap-8 px-8 w-max">
-            {/*
-              Repeat the same headings so it scrolls seamlessly.
-              You could also map over an array of strings here.
-            */}
-            <h1 className="shrink-0 text-white text-10xl font-black">
-              Wawa Sensei
-            </h1>
-            <h2 className="shrink-0 text-white text-8xl italic font-light">
-              React Three Fiber
-            </h2>
-            <h2 className="shrink-0 text-white text-12xl font-bold">
-              Three.js
-            </h2>
-            <h2 className="shrink-0 text-transparent text-12xl font-bold italic outline-text">
-              Ultimate Guide
-            </h2>
-            <h2 className="shrink-0 text-white text-9xl font-medium">
-              Tutorials
-            </h2>
-            <h2 className="shrink-0 text-white text-9xl font-extralight italic">
-              Learn
-            </h2>
-            <h2 className="shrink-0 text-white text-13xl font-bold">
-              Practice
-            </h2>
-            <h2 className="shrink-0 text-transparent text-13xl font-bold outline-text italic">
-              Creative
-            </h2>
-          </div>
-        </div>
-      </div>
+      <Marquee />
     </>
   );
 };

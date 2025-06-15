@@ -39,10 +39,27 @@ body {
   border-radius: 6px;
   border: 4px solid var(--offWhite); 
   background-clip: padding-box;
- }
+}
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--offWhite); 
+}
+
+@keyframes horizontal-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+@keyframes horizontal-scroll-2 {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+/* 2) Expose them as utility classes */
+.animate-horizontal-scroll {
+  animation: horizontal-scroll 16s linear infinite;
+}
+.animate-horizontal-scroll-2 {
+  animation: horizontal-scroll-2 16s linear infinite;
 }
 
 @media (prefers-color-scheme: dark) {
