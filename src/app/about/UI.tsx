@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { atom, useAtom } from "jotai";
 import Marquee from "./marquee";
 
@@ -53,6 +53,11 @@ pages.push({
 
 const UI: React.FC = () => {
   const [page, setPage] = useAtom(pageAtom);
+
+  useEffect(() => {
+    const audio = new Audio("/audios/page-flip-01a.mp3")
+    audio.play()
+  }, [page])
   
   return (
     <>
@@ -87,11 +92,11 @@ const UI: React.FC = () => {
             <button
               key="back-cover"
               className={`border-transparent hover:border-white transition-all duration-300 px-4 py-3 rounded-full text-lg uppercase shrink-0 border ${
-                page === pages.length - 1
+                page === pages.length
                   ? "bg-white/90 text-black"
                   : "bg-black/30 text-white"
               }`}
-              onClick={() => setPage(pages.length - 1)}
+              onClick={() => setPage(pages.length)}
             >
               Back Cover
             </button>

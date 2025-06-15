@@ -1,13 +1,20 @@
 "use client";
 
 import React from "react";
-import { Environment, OrbitControls } from "@react-three/drei";
+import { Environment, Float, OrbitControls } from "@react-three/drei";
 import Book from "./book";
 
 const Experience: React.FC = () => {
   return (
     <>
-      <Book />
+      <Float
+        rotation-x={-Math.PI / 4}
+        floatIntensity={1}
+        speed={2}
+        rotationIntensity={2}
+      >
+        <Book />
+      </Float>
       {/* OrbitControls lets you rotate/zoom the scene with the mouse */}
       <OrbitControls />
 
