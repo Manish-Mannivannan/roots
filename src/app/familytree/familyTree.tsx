@@ -64,8 +64,13 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
     const xOffset = svgWidth / 2 - (root.x || 0);
     const yOffset = svgHeight / 6 - (root.y || 0); // Adjust the yOffset as needed
 
+    // pick your desired starting zoom:
+    const initialScale = 1.5;
+
     // Apply the initial transform to center the tree
-    const initialTransform = d3.zoomIdentity.translate(xOffset, yOffset);
+    const initialTransform = d3.zoomIdentity
+      .translate(xOffset, yOffset)
+      .scale(initialScale)
     svg.call(d3.zoom<SVGSVGElement, unknown>().transform, initialTransform);
 
     // Add zoom behavior with initial transform

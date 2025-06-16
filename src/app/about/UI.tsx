@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { atom, useAtom } from "jotai";
 import Marquee from "./marquee";
+import Image from "next/image";
 
 // 1) Your list of picture keys
 const pictures: string[] = [
@@ -54,29 +55,22 @@ pages.push({
 const UI: React.FC = () => {
   const [page, setPage] = useAtom(pageAtom);
 
+  const soundMount = useRef(false);
   useEffect(() => {
-    if(page){
-      const audio = new Audio("/audios/page-flip-01a.mp3")
-      audio.play()
+    if (!soundMount.current) {
+      soundMount.current = true;
+      return;
     }
+    const audio = new Audio("/audios/page-flip-01a.mp3")
+    audio.play()
   }, [page])
   
   return (
     <>
       {/* BUTTON BAR */}
       <main className="pointer-events-none select-none z-10 fixed inset-0 flex justify-between flex-col">
-        <a
-          className="pointer-events-auto mt-10 ml-10"
-          href="https://lessons.wawasensei.dev/courses/react-three-fiber"
-        >
-          {/* <Image
-            className="w-20"
-            src="/people/img1.png"
-            alt="Wawa Sensei Logo"
-            width={30}
-            height={30}
-          /> */}
-        </a>
+        {/* Dont remove DIV it breaks the buttons from flex between*/}
+        <div></div>
         <div className="w-full overflow-auto pointer-events-auto flex justify-center">
           <div className="overflow-auto flex items-center gap-4 max-w-full p-10">
             {pages.map((_, idx) => (

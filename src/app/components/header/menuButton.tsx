@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
+import Image from 'next/image'
 
 const MenuButton = () => {
   const pathname = usePathname();
@@ -46,7 +47,7 @@ const MenuButton = () => {
               {/* only show OR between items, not after the last */}
               {idx < visiblePages.length - 1 && (
                 <div className="divider divider-horizontal divider-neutral h-20 gap-1">
-                  OR
+                  <Image src="/icons/icon.png" alt="OR" width="100" height="100"/>
                 </div>
               )}
             </Fragment>
