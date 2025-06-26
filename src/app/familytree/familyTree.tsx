@@ -15,8 +15,20 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
   const gRef = useRef<SVGGElement | null>(null);
   const [selectedNode, setSelectedNode] = useState<FamilyNode | null>(data); // Initialize with the first node
   const [isSpouse, setIsSpouse] = useState<boolean>(false);
+  const treeWidth = 100, treeHeight = 200; // Height and width og svg
+  const initialScale = 1.5; // pick your desired starting zoom
   const nodeR = 30; // Radius of each node
+  const nodeColor = "rgba(246, 156, 146, 1)"
+  const nodeHC = "rgba(246, 186, 146, 1)"
   const sOffset = 100; // Spouse node offset from main node
+  const textFontSize = 14; // Font size of text above node
+  const textMargin = 1.8; // Space from top of node to text
+  const textSpacing = 0.9; // Space between text lines
+  const textColor = "rgba(0,0,0,0.75)";
+  const linkColor = "rgba(246, 146, 146, 1)"; // Color of links
+  const linkWidth = 2; // Width of links
+  const labelPadding = 4; // Padding for text lable
+  const labelBlur = 0.1;
 
   const handleSelectFromSearch = (member: FamilyNode) => {
     // 1) Close the search modal
@@ -57,15 +69,12 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
 
     const root = d3.hierarchy<FamilyNode>(data);
     const treeLayout = d3.tree<FamilyNode>()
-    .nodeSize([100, 200]); //Tree size [x,y]
+    .nodeSize([treeWidth, treeHeight]); //Tree size [x,y]
     treeLayout(root);
 
     // Calculate the center offset based on the parent element's width
     const xOffset = svgWidth / 2 - (root.x || 0);
     const yOffset = svgHeight / 6 - (root.y || 0); // Adjust the yOffset as needed
-
-    // pick your desired starting zoom:
-    const initialScale = 1.5;
 
     // Apply the initial transform to center the tree
     const initialTransform = d3.zoomIdentity
@@ -90,7 +99,18 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .attr('r', nodeR)
       .attr('cx', 0)
       .attr('cy', 0);
-
+    
+    // Define text blur
+    svg.append('defs')
+      .append('filter')
+        .attr('id', 'text-backdrop-blur')
+        // expand the filter region so blur doesn’t get clipped
+        .attr('x', '-20%').attr('y','-20%')
+        .attr('width','140%').attr('height','140%')
+      .append('feGaussianBlur')
+        .attr('in', 'SourceGraphic')
+        .attr('stdDeviation', 10);    // tweak blur radius, “blur(10px)”
+    
     // Add links
     g.selectAll('.link')
       .data(root.links() as Array<HierarchyPointLink<FamilyNode>>)
@@ -101,8 +121,9 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .attr('y1', (d: HierarchyPointLink<FamilyNode>) => (d.source as HierarchyPointNode<FamilyNode>).y || 0)
       .attr('x2', (d: HierarchyPointLink<FamilyNode>) => (d.target as HierarchyPointNode<FamilyNode>).x || 0)
       .attr('y2', (d: HierarchyPointLink<FamilyNode>) => (d.target as HierarchyPointNode<FamilyNode>).y || 0)
-      .attr('stroke', '#ccc')
-      .attr('stroke-width', 2);
+      .attr('stroke', linkColor)
+      .attr('stroke-width', linkWidth)
+      .attr('stroke-opacity', 0.5);
 
     // Add nodes
     const node = g.selectAll('.node')
@@ -127,21 +148,21 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
 
     node.append('circle')
       .attr('r', nodeR)
-      .attr('fill', 'none')
-      .attr('stroke', '#000')
+      .attr('fill', 'transparent')
+      .attr('stroke', `${nodeColor}`)
       .attr('stroke-width', 3);
 
     node.append('text')
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'hanging')
-      .attr('font-size', 12)
-      .attr('fill', '#333')
+      .attr('font-size', textFontSize)
+      .attr('fill', textColor)
       .selectAll('tspan')
       .data(d => d.data.name.split(' ').reverse())
       .enter()
       .append('tspan')
       .attr('x', 0)
-      .attr('dy', (d, i) => i === 0 ? -1.6 * nodeR + 'px' : -0.7 * nodeR + 'px') // Adjust vertical spacing
+      .attr('dy', (d, i) => i === 0 ? -textMargin * nodeR + 'px' : -textSpacing * nodeR + 'px') // Adjust vertical spacing
       .text(d => d);
 
     // Add spouse nodes
@@ -167,21 +188,21 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
 
     spouseNode.append('circle')
       .attr('r', nodeR)
-      .attr('fill', 'none')
-      .attr('stroke', '#000')
+      .attr('fill', 'transparent')
+      .attr('stroke', `${nodeColor}`)
       .attr('stroke-width', 3);
 
     spouseNode.append('text')
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'hanging')
-      .attr('font-size', 12)
-      .attr('fill', '#333')
+      .attr('font-size', textFontSize)
+      .attr('fill', textColor)
       .selectAll('tspan')
       .data(d => (d.data.spouse || "").split(' ').reverse())
       .enter()
       .append('tspan')
       .attr('x', 0)
-      .attr('dy', (d, i) => i === 0 ? -1.6 * nodeR + 'px' : -0.7 * nodeR + 'px') // Adjust vertical spacing
+      .attr('dy', (d, i) => i === 0 ? -textMargin * nodeR + 'px' : -textSpacing * nodeR + 'px') // Adjust vertical spacing
       .text(d => d);
 
     // Add spouse links
@@ -194,9 +215,70 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       .attr('y1', (d: HierarchyPointNode<FamilyNode>) => d.y || 0)
       .attr('x2', (d: HierarchyPointNode<FamilyNode>) => (d.x || 0) + sOffset - nodeR) // Adjust for circle radius
       .attr('y2', (d: HierarchyPointNode<FamilyNode>) => d.y || 0)
-      .attr('stroke', '#000')
-      .attr('stroke-width', 2);
+      .attr('stroke', linkColor)
+      .attr('stroke-width', linkWidth)
+      .attr('stroke-opacity', 0.5);
+      
+    // Add blur rect to text
+    g.selectAll<SVGGElement, any>('.node, .spouse-node')
+    .each(function() {
+      const g = d3.select(this);
+      const textEl = g.select<SVGTextElement>('text').node();
+      if (!textEl) return;
+      const { x, y, width, height } = textEl.getBBox();
 
+      g.insert('rect', 'text')
+        .attr('x', x - labelPadding)
+        .attr('y', y - labelPadding)
+        .attr('width', width  + 2 * labelPadding)
+        .attr('height', height + 2 * labelPadding)
+        .attr('rx', 4)
+        .attr('ry', 4)
+        .attr('fill', `rgba(255,255,255,${labelBlur})`)
+        .attr('filter', 'url(#text-backdrop-blur)')
+        .attr('pointer-events', 'none');
+    })
+
+    g.selectAll<SVGCircleElement, HierarchyPointNode<FamilyNode>>('.node circle, .spouse-node circle')
+      .style('cursor','pointer')  // still show pointer
+      .on('mouseover', function(event, d) {
+        const group = d3.select(this.parentNode as SVGGElement);
+        // 1) scale & highlight
+        group.select<SVGCircleElement>('circle')
+          .transition().duration(200)
+            .attr('r', nodeR * 1.1)
+            .attr('stroke', `${nodeHC}`)
+            .attr('stroke-width', 4);
+
+        // 2) path highlight
+        const ancestors = d.ancestors();
+        g.selectAll<SVGLineElement, HierarchyPointLink<FamilyNode>>('.link')
+          .transition().duration(200)
+            .attr('stroke-opacity', link =>
+              ancestors.includes(link.target) ? 1 : 0.2
+            );
+
+        // 2b) highlight the spouse-link if this is a spouse-group
+        g.selectAll<SVGLineElement, HierarchyPointNode<FamilyNode>>('.spouse-link')
+          .transition().duration(200)
+            .attr('stroke-opacity', nodeDatum =>
+              nodeDatum === d ? 1 : 0.2
+            );
+      })
+      .on('mouseout', function(event, d) {
+        const group = d3.select(this.parentNode as SVGGElement);
+        // reset circle
+        group.select<SVGCircleElement>('circle')
+          .transition().duration(200)
+            .attr('r', nodeR)
+            .attr('stroke', `${nodeColor}`)
+            .attr('stroke-width', 3);
+        // reset links
+        g.selectAll<SVGLineElement, unknown>('.link, .spouse-link')
+          .transition().duration(200)
+            .attr('stroke-opacity', 0.5);
+      });
+    
     const handleResize = () => {
       const svgWidth = parentElement.clientWidth;
       const svgHeight = parentElement.clientHeight;

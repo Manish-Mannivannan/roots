@@ -1,5 +1,5 @@
 import { Address, FamilyNode } from "@/app/types/interfaces";
-import { parentAddress, calculateAge } from "../data/dataUtils";
+import { compAddress, calculateAge } from "../data/dataUtils";
 import { useCopyButtonState } from "../data/uiElements";
 import Image from 'next/image'
 
@@ -9,16 +9,7 @@ interface FamilyTreeModalProps {
 }
 
 const FamilyTreeModal: React.FC<FamilyTreeModalProps> = ({ familyNode, isSpouse }) => {
-  const compAddress = (): Address | null => {
-    if (familyNode.spouseAdd && isSpouse) return familyNode.spouseAdd; //if spouseadd and spouse true
-    if (!familyNode.spouseAdd && isSpouse && familyNode.address)
-      return familyNode.address; //if no sposeadd and spouse true and nodeadd
-    if (familyNode.address && !isSpouse) return familyNode.address; //if address and not spouse
-    if (!familyNode.address && isSpouse) return parentAddress(familyNode.id); //if no nodeadd and spouse true
-    return parentAddress(familyNode.id); //if no address and not spouse
-  };
-
-  const address = compAddress();
+  const address = compAddress(familyNode, isSpouse);
   const age = calculateAge(familyNode, isSpouse);
   const { copyButtonState, copyButtonTimer } = useCopyButtonState();
 

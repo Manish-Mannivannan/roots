@@ -11,6 +11,7 @@
   --palette5: rgba(246, 161, 146, 1);
   --offWhite: rgba(240, 240, 240, 1);
   --darkGray: rgba(50, 50, 50, 1);
+  --softBlack: rgba(0,0,0,0.75);
 }
 
 body {
@@ -54,12 +55,19 @@ body {
   to   { transform: translateX(0); }
 }
 
-/* 2) Expose them as utility classes */
+/* 2) Used by about page background */
 .animate-horizontal-scroll {
   animation: horizontal-scroll 16s linear infinite;
 }
 .animate-horizontal-scroll-2 {
   animation: horizontal-scroll-2 16s linear infinite;
+}
+
+.GlassBG {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {

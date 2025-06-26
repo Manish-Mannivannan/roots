@@ -73,6 +73,15 @@ export const calculateAge = (familyNode: FamilyNode, isSpouse: boolean): string 
   return [`${years}` + " years",`${months}`+ " months"];
 };
 
+export const compAddress = (familyNode: FamilyNode, isSpouse: boolean): Address | null => {
+  if (familyNode.spouseAdd && isSpouse) return familyNode.spouseAdd; //if spouseadd and spouse true
+  if (!familyNode.spouseAdd && isSpouse && familyNode.address)
+    return familyNode.address; //if no sposeadd and spouse true and nodeadd
+  if (familyNode.address && !isSpouse) return familyNode.address; //if address and not spouse
+  if (!familyNode.address && isSpouse) return parentAddress(familyNode.id); //if no nodeadd and spouse true
+  return parentAddress(familyNode.id); //if no address and not spouse
+};
+
 export const getMembersWithName = (searchTerm: string): FamilyNode[] => {
   const result: FamilyNode[] = [];
 
