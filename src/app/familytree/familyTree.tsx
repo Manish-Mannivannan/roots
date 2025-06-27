@@ -7,7 +7,7 @@ import {
   FamilyTreeModal,
   SearchModal,
   makeId,
-  createAnimator
+  createAnimator,
 } from "../familytree/familyTreeExports";
 import { FamilyNode } from "@/app/types/interfaces";
 
@@ -49,6 +49,17 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
     popOutDur = 200, // circle “shrink” back
     lineDrawDur = 400; // link draw time
 
+  const [isAnimating, setIsAnimating] = useState(true);
+  const animRef = useRef(isAnimating);
+  useEffect(() => {
+    animRef.current = isAnimating;
+  }, [isAnimating]);
+
+  function treeDepth(node: d3.HierarchyPointNode<any>): number {
+    if (!node.children || node.children.length === 0) return 1;
+    return 1 + Math.max(...node.children.map(treeDepth));
+  }
+
   const handleSelectFromSearch = (member: FamilyNode) => {
     // 1) Close the search modal
     const searchDialog = document.getElementById(
@@ -67,6 +78,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
     d: HierarchyPointNode<FamilyNode>,
     isSpouse: boolean
   ) => {
+    if (animRef.current) return;
     setSelectedNode(d.data); // Set the selected node
     setIsSpouse(isSpouse); //Set spouse boolean
     (document.getElementById("my_modal") as HTMLDialogElement).showModal(); // Show the modal
@@ -333,6 +345,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
     )
       .style("cursor", "pointer") // still show pointer
       .on("pointerover pointerdown", function (event, d) {
+        if (isAnimating) return;
         const group = d3.select(this.parentNode as SVGGElement);
         // 1) scale & highlight
         group
@@ -363,6 +376,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
           );
       })
       .on("pointerout pointerup", function (event, d) {
+        if (isAnimating) return;
         const group = d3.select(this.parentNode as SVGGElement);
         // reset circle
         group
@@ -392,9 +406,22 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
       popOutDur,
     });
 
+    setIsAnimating(true);
     animateNode(root, 0);
+    const D = treeDepth(root);
+    const totalTime =
+      popInDur + popOutDur +
+      D*(lineDelay+lineDrawDur) +
+      popInDur + popOutDur +
+      50;
+
+    const tid = window.setTimeout(() => setIsAnimating(false), totalTime);
+    return () => window.clearTimeout(tid);
   }, [data]);
 
+  useEffect(() => {
+    console.log("isAnimating is now:", isAnimating);
+  }, [isAnimating]);
   return (
     <>
       <svg ref={svgRef} className="w-full h-full">
