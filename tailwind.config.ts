@@ -16,7 +16,7 @@ const config: Config = {
         palette5: "rgba(246,161,146,1)",
         offWhite: "rgba(240, 240, 240, 1)",
         darkGray: "rgba(50, 50, 50, 1)",
-        softBlack: "rgba(0,0,0,0.75)",
+        mutedBlack: "rgba(0,0,0,0.75)",
       },
     },
   },
