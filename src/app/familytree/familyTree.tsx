@@ -345,7 +345,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
     )
       .style("cursor", "pointer") // still show pointer
       .on("pointerover pointerdown", function (event, d) {
-        if (isAnimating) return;
+        if (animRef.current) return;
         const group = d3.select(this.parentNode as SVGGElement);
         // 1) scale & highlight
         group
@@ -366,17 +366,27 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
           );
 
         // 2b) highlight the spouse-link if this is a spouse-group
-        g.selectAll<SVGLineElement, HierarchyPointNode<FamilyNode>>(
-          ".spouse-link"
-        )
-          .transition()
-          .duration(200)
-          .attr("stroke-opacity", (nodeDatum) =>
-            nodeDatum === d ? lineHOpacity : lineLOpacity
-          );
+        if ((this.parentNode as Element).classList.contains("spouse-node")) {
+          const spId = makeId("spouselink", d.data.id);
+
+          // fade out all the other spouse-links, if you want
+          g.selectAll<SVGLineElement, unknown>(".spouse-link")
+            .filter(function () {
+              return this.id !== spId;
+            })
+            .transition()
+            .duration(200)
+            .attr("stroke-opacity", lineLOpacity);
+
+          // highlight just this one
+          g.select<SVGLineElement>(`#${spId}`)
+            .transition()
+            .duration(200)
+            .attr("stroke-opacity", lineHOpacity);
+        }
       })
       .on("pointerout pointerup", function (event, d) {
-        if (isAnimating) return;
+        if (animRef.current) return;
         const group = d3.select(this.parentNode as SVGGElement);
         // reset circle
         group
@@ -410,9 +420,11 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ data }) => {
     animateNode(root, 0);
     const D = treeDepth(root);
     const totalTime =
-      popInDur + popOutDur +
-      D*(lineDelay+lineDrawDur) +
-      popInDur + popOutDur +
+      popInDur +
+      popOutDur +
+      D * (lineDelay + lineDrawDur) +
+      popInDur +
+      popOutDur +
       50;
 
     const tid = window.setTimeout(() => setIsAnimating(false), totalTime);
