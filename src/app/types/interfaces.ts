@@ -4,11 +4,13 @@ export interface Address {
 }
 
 export interface FamilyNode {
+  email?: string;
   name: string;
   id: string;
   birthDate: string;
   deathDate?: string
   address?: Address;
+  tlf?: string;
   image?: string;
   spouse?: string;
   spouseId?: string;
