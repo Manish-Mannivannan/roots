@@ -45,10 +45,11 @@ export async function ensureUserProfile() {
     (user_metadata && (user_metadata.avatar_url as string)) || null;
 
   const { error: upsertError } = await supabase
-    .from('profiles')
+    .from('users')
     .upsert(
       {
         id, // must match auth.users.id for RLS
+        email,
         full_name: fullName,
         avatar_url: avatarUrl,
       },

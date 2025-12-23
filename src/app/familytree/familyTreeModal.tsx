@@ -1,6 +1,7 @@
 import { Address, FamilyNode } from "@/app/types/interfaces";
 import { compAddress, calculateAge } from "../data/dataUtils";
 import { useCopyButtonState } from "../data/uiElements";
+import GoogleMapsBuilder from "../components/googleMapsBuilder";
 import Image from 'next/image'
 
 interface FamilyTreeModalProps {
@@ -71,14 +72,8 @@ const FamilyTreeModal: React.FC<FamilyTreeModalProps> = ({ familyNode, isSpouse 
             <p className="text-2xl font-bold bg-gradient-to-r from-palette3 via-palette4 to-palette5 bg-clip-text text-transparent">
               Address
             </p>
-            {address && address.map && (
-              <iframe
-                src={address.map}
-                className="border-0 w-full h-2/3"
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
+            {address && address.name && (
+              <GoogleMapsBuilder address={address.name} />
             )}
             <button onClick={copyButtonTimer} className="btn flex items-center justify-around bg-offWhite w-full mt-3 rounded">
               {address ? address.name : "No Address"}
