@@ -98,6 +98,8 @@ const Page: React.FC<PageProps> = ({number, front, back, page, opened, bookClose
       ? [`/aboutTextures/book-cover-roughness.jpg`]
       : []),
   ]);
+  // Three textures are mutable objects; set the color space before they are used by materials.
+  // eslint-disable-next-line react-hooks/immutability
   picture.colorSpace = picture2.colorSpace = SRGBColorSpace;
   const group = useRef<Group>(null);
   const turnedAt = useRef<number>(0);
@@ -107,6 +109,9 @@ const Page: React.FC<PageProps> = ({number, front, back, page, opened, bookClose
   const isDragging = useRef(false);
 
   const skinnedMeshRef = useRef<SkinnedMesh>(null);
+  const [_, setPage] = useAtom(pageAtom);
+  const [highlighted, setHighlighted] = useState(false);
+  useCursor(highlighted);
 
   const manualSkinnedMesh = useMemo(() => {
     const bones: Bone[] = [];
@@ -235,10 +240,6 @@ const Page: React.FC<PageProps> = ({number, front, back, page, opened, bookClose
     }
 
   })
-
-  const [_, setPage] = useAtom(pageAtom);
-  const [highlighted, setHighlighted] = useState(false);
-  useCursor(highlighted);
 
   return (
     <group 
