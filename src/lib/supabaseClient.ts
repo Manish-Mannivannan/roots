@@ -19,6 +19,8 @@ export async function signInWithGoogle() {
   if (error) {
     console.error('Error signing in with Google:', error.message);
   }
+
+  return { error };
 }
 
 export async function ensureUserProfile() {
