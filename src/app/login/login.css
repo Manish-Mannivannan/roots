@@ -1,0 +1,466 @@
+/*
+ * Login page styles.
+ *
+ * Static styling only — the staggered entrance choreography lives in
+ * `loginAnimation.ts` (GSAP). The keyframes below cover ambient loops
+ * (background fade, logo float, glow pulse) and state-driven micro
+ * interactions (spinner, hover sweep, error shake, success check).
+ */
+
+/* ---------- ambient + state keyframes ---------- */
+@keyframes bgFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes idleFloat {
+  0% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(1deg);
+  }
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+}
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes sweep {
+  0% {
+    transform: translateX(-160%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(320%) skewX(-12deg);
+  }
+}
+@keyframes shakeA {
+  10%,
+  90% {
+    transform: translateX(-1px);
+  }
+  20%,
+  80% {
+    transform: translateX(2px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-5px);
+  }
+  40%,
+  60% {
+    transform: translateX(5px);
+  }
+}
+@keyframes shakeB {
+  10%,
+  90% {
+    transform: translateX(-1px);
+  }
+  20%,
+  80% {
+    transform: translateX(2px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-5px);
+  }
+  40%,
+  60% {
+    transform: translateX(5px);
+  }
+}
+@keyframes checkPop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ---------- base ---------- */
+.roots-login {
+  font-family: var(--font-inter, Inter), system-ui, sans-serif;
+  color: #332723;
+  -webkit-font-smoothing: antialiased;
+}
+.roots-login .fraunces {
+  font-family: var(--font-fraunces, Fraunces), serif;
+}
+.roots-login * {
+  box-sizing: border-box;
+}
+
+/* ---------- stage + background ---------- */
+.roots-login .stage {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  overflow: hidden;
+  animation: bgFade 0.7s ease both;
+  background: radial-gradient(1100px 900px at 10% 24%, rgba(244, 205, 131, 0.85), transparent 58%),
+    radial-gradient(1150px 1000px at 92% 78%, rgba(237, 128, 109, 0.66), transparent 60%),
+    radial-gradient(820px 700px at 74% 10%, rgba(246, 178, 148, 0.6), transparent 55%),
+    linear-gradient(140deg, #fcebd2 0%, #f8d9c3 48%, #f4c3b0 100%);
+}
+.roots-login .blob {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.roots-login .blobA {
+  top: -120px;
+  left: -100px;
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(244, 205, 131, 0.5), transparent 70%);
+  filter: blur(46px);
+}
+.roots-login .blobB {
+  bottom: -160px;
+  right: -80px;
+  width: 560px;
+  height: 560px;
+  background: radial-gradient(circle, rgba(237, 128, 109, 0.34), transparent 70%);
+  filter: blur(52px);
+}
+.roots-login .blobC {
+  bottom: 8%;
+  left: 16%;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(246, 178, 148, 0.3), transparent 70%);
+  filter: blur(40px);
+}
+
+.roots-login .rootsSvg {
+  position: absolute;
+  top: 0;
+  right: 318px;
+  width: 36%;
+  height: 100%;
+  opacity: 0.09;
+  pointer-events: none;
+}
+.roots-login .rootPath {
+  stroke-dasharray: 1600;
+}
+
+/* ---------- layout ---------- */
+.roots-login .layout {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 72px;
+  max-width: 1080px;
+  width: 100%;
+}
+
+/* ---------- card ---------- */
+.roots-login .card {
+  position: relative;
+  flex-shrink: 0;
+  width: 452px;
+  padding: 56px 50px;
+  border-radius: 26px;
+  background: linear-gradient(180deg, rgba(255, 253, 251, 0.97), rgba(255, 249, 243, 0.95));
+  border: 1px solid rgba(237, 128, 109, 0.14);
+  box-shadow: 0 30px 70px -24px rgba(120, 58, 36, 0.32), 0 8px 22px rgba(120, 58, 36, 0.1);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+}
+.roots-login .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 40px 90px -22px rgba(120, 58, 36, 0.38), 0 10px 26px rgba(120, 58, 36, 0.12);
+}
+
+.roots-login .brandRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 26px;
+}
+.roots-login .brandIcon {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(237, 128, 109, 0.28));
+}
+.roots-login .wordmark {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  background: linear-gradient(120deg, #f4cd83, #f6b294 45%, #ed806d);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.roots-login .cardTitle {
+  margin: 0 0 12px 0;
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #332723;
+}
+.roots-login .cardSubtitle {
+  margin: 0 0 34px 0;
+  font-size: 16px;
+  line-height: 1.55;
+  color: #76635d;
+  text-wrap: pretty;
+}
+
+/* ---------- google button ---------- */
+.roots-login .gbtn {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 22px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(237, 128, 109, 0.35);
+  background: #ffffff;
+  color: #332723;
+  font-family: inherit;
+  font-size: 15.5px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(120, 58, 36, 0.06);
+  transition: transform 0.18s ease, background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.roots-login .gbtn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 55%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  transform: translateX(-160%) skewX(-12deg);
+  pointer-events: none;
+}
+.roots-login .gbtn:not(.is-loading):not(.is-success):hover::after {
+  animation: sweep 0.85s ease;
+}
+.roots-login .gbtn:not(.is-loading):not(.is-success):hover {
+  background: rgba(246, 178, 148, 0.1);
+  transform: translateY(-1.5px);
+  box-shadow: 0 8px 20px rgba(237, 128, 109, 0.18);
+}
+.roots-login .gbtn:not(.is-loading):not(.is-success):active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 6px rgba(237, 128, 109, 0.12);
+}
+.roots-login .gbtn:focus-visible {
+  outline: 3px solid rgba(237, 128, 109, 0.55);
+  outline-offset: 3px;
+}
+.roots-login .gbtn.is-loading {
+  background: rgba(246, 178, 148, 0.14) !important;
+  cursor: default;
+}
+.roots-login .gbtn.is-success {
+  background: linear-gradient(120deg, #f4cd83, #ed806d) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 6px rgba(237, 128, 109, 0.14), 0 12px 28px rgba(237, 128, 109, 0.38) !important;
+}
+.roots-login .gbtn.is-error {
+  border-color: rgba(237, 128, 109, 0.65) !important;
+}
+
+.roots-login .spinner {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(237, 128, 109, 0.28);
+  border-top-color: #ed806d;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+.roots-login .checkIcon {
+  flex-shrink: 0;
+  animation: checkPop 0.4s ease both;
+}
+
+.roots-login .errorBanner {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: rgba(237, 128, 109, 0.09);
+  border: 1px solid rgba(237, 128, 109, 0.22);
+  color: #a34b39;
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.roots-login .privacyRow {
+  margin-top: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #76635d;
+  font-size: 12.5px;
+}
+
+/* ---------- hero ---------- */
+.roots-login .hero {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0;
+}
+.roots-login .heroImgRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.roots-login .heroGlow {
+  position: absolute;
+  width: 440px;
+  height: 440px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(246, 178, 148, 0.5) 0%, rgba(244, 205, 131, 0.28) 42%, transparent 70%);
+  filter: blur(12px);
+  animation: glowPulse 7s ease-in-out 2.4s infinite;
+}
+.roots-login .logoWrap {
+  position: relative;
+  animation: idleFloat 7s ease-in-out 2.4s infinite;
+}
+.roots-login .heroImg {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  filter: drop-shadow(0 30px 46px rgba(160, 80, 40, 0.28));
+}
+.roots-login .heroCopy {
+  position: relative;
+  text-align: center;
+  max-width: 420px;
+  margin-top: -8px;
+}
+.roots-login .heroCopy h2 {
+  margin: 0 0 12px 0;
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #332723;
+  text-wrap: balance;
+}
+.roots-login .heroCopy p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #76635d;
+  text-wrap: pretty;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1024px) {
+  .roots-login .layout {
+    gap: 34px !important;
+  }
+  .roots-login .card {
+    width: 384px !important;
+    padding: 46px 38px !important;
+  }
+  .roots-login .heroImg {
+    max-width: 300px !important;
+  }
+  .roots-login .heroCopy h2 {
+    font-size: 28px !important;
+  }
+}
+@media (max-width: 720px) {
+  .roots-login .stage {
+    padding: 26px 18px !important;
+  }
+  .roots-login .layout {
+    flex-direction: column-reverse !important;
+    gap: 22px !important;
+    max-width: 460px !important;
+  }
+  .roots-login .card {
+    width: 100% !important;
+    padding: 34px 24px !important;
+  }
+  .roots-login .heroImg {
+    max-width: 168px !important;
+  }
+  .roots-login .heroGlow {
+    width: 300px !important;
+    height: 300px !important;
+  }
+  .roots-login .heroCopy {
+    display: none !important;
+  }
+  .roots-login .wordmark {
+    font-size: 44px !important;
+  }
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .roots-login .logoWrap,
+  .roots-login .heroGlow {
+    animation: none !important;
+  }
+  .roots-login .rootPath {
+    stroke-dashoffset: 0 !important;
+  }
+  .roots-login .gbtn::after {
+    display: none !important;
+  }
+  .roots-login .spinner {
+    animation-duration: 0s !important;
+  }
+}
